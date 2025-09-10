@@ -14,7 +14,7 @@ dependencies = [
     "scratchattach"
 ]
 [project.scripts]
-#spam-cli = "spam:main_cli"
+scratch = "scratch_cli.__main__:main"
 
 [project.urls]
 # Homepage = "https://example.com"
