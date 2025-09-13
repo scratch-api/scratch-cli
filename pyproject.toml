@@ -12,7 +12,8 @@ license = "MIT"
 keywords = ["scratch", "CLI"]
 dependencies = [
     "scratchattach",
-    "rich"
+    "rich",
+    "pydantic"
 ]
 [project.scripts]
 scratch = "scratch_cli.__main__:main"
