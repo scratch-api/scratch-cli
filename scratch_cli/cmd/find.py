@@ -2,6 +2,7 @@ from typing import Optional
 
 from scratch_cli.context import context
 from scratch_cli import rfmt
+from scratch_cli import safmt
 import scratchattach as sa
 
 def find(*,
@@ -16,12 +17,7 @@ def find(*,
         match mode:
             case "shared" | _:
                 for project in user.projects(limit=limit, offset=offset):
-                    rfmt.print_fp(
-                        "project.md",
-                        title=project.title,
-                        id=project.id,
-                        author=project.author_name,
-                    )
+                    rfmt.print_md(safmt.project(project))
 
         return
 
