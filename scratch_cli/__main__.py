@@ -6,7 +6,7 @@ from scratch_cli.__about__ import __version__
 
 
 class _Args(argparse.Namespace):
-    command: Literal['login', 'group', 'groups', 'ungroup', 'profile', 'find', None]
+    command: Literal['login', 'group', 'groups', 'ungroup', 'profile', 'find', 'config', None]
 
     # find
     offset: int
@@ -19,6 +19,9 @@ class _Args(argparse.Namespace):
 
     # group
     group_command: Literal['switch', 'rename', 'delete', None]
+
+    # config
+    config_command: Optional[str]
 
 
 def main():
@@ -58,6 +61,9 @@ def main():
                       help="User to search for projects (shared, loved, favorite)")
     find.add_argument("mode", nargs="?", help="What we are searching for")
 
+    config = commands.add_parser("config", help="View your PUBLIC _SCLI_CONFIG_")
+    config.add_subparsers(dest="config_command").add_parser("edit", help="Edit your scli config")
+
     args = parser.parse_args(namespace=_Args())
 
     do_cmd(parser, args)
@@ -81,6 +87,10 @@ def do_cmd(parser: argparse.ArgumentParser, args: _Args) -> None:
                 limit=args.limit,
                 user=args.user,
                 mode=args.mode
+            ),
+        case "config":
+            cmd.config(
+                args.config_command
             )
         case _:
             parser.print_help()

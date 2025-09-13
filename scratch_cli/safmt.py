@@ -38,6 +38,13 @@ def featured_project(self: Optional[dict[str, str | dict[str, str]]]):
         id=self_project.get("id")
     ) if self else '###### No featured project'
 
+def user(self: sa.User):
+    return rfmt.md_fp(
+        "user.md",
+        username=self.name,
+        id=self.id,
+    )
+
 
 def user_profile(self: sa.User):
     print(scli_config(self))

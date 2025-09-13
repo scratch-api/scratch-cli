@@ -1,5 +1,9 @@
 from __future__ import annotations
 
+import sys
+import subprocess
+
+from pathlib import Path
 from typing import Final, Optional
 
 
@@ -18,3 +22,15 @@ def split_trailing_number(self: str) -> tuple[str, str]:
         self = self[:-1]
 
     return self, number
+
+def open_file(path: Path):
+    path = path.resolve()
+
+    match sys.platform:
+        case "win32":
+            cmd = "start"
+        case "linux":
+            cmd = "xdg-open"
+            subprocess.run([cmd, path])
+        case plat:
+            raise NotImplementedError(f"No 'appdata' folder implemented for {plat}")

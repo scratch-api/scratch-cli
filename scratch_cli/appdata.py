@@ -19,3 +19,6 @@ def _gen_appdata_folder() -> Path:
 PATH: Final[Path] = _gen_appdata_folder()
 SCRATCHCLI: Final[Path] = PATH / "scratch_cli"
 COOKIES: Final[Path] = SCRATCHCLI / "cookies.json"
+TEMP: Final[Path] = SCRATCHCLI / "temp"
+
+TEMP.mkdir(parents=True, exist_ok=True)
