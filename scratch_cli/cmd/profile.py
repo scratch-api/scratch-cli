@@ -1,6 +1,6 @@
 from scratch_cli.decorator import sessionable
 from scratch_cli.context import context
-from scratch_cli import assets
+from scratch_cli import rfmt
 
 from rich.color import Color
 
@@ -25,7 +25,7 @@ def profile():
         featured_data = {}
     featured_project = featured_data.get("project", {})
 
-    assets.print_fmt(
+    rfmt.print_fp(
         "user_profile.md",
         username=user.name,
         id=user.id,
@@ -34,10 +34,10 @@ def profile():
         country=user.country,
         ocular=ocular,
         join_date=user.join_date,
-        about_me=user.about_me,
-        wiwo=user.wiwo,
+        about_me=rfmt.quote(user.about_me),
+        wiwo=rfmt.quote(user.wiwo),
         message_count=user.message_count(),
-        featured=assets.markdown_fmt(
+        featured=rfmt.md_fp(
             "featured_project.md",
             heading=featured_data.get("label", "Featured Project"),
             title=featured_project.get("title"),
