@@ -8,7 +8,7 @@ from scratch_cli.__about__ import __version__
 
 class _Args(argparse.Namespace):
     do_with_all: bool
-    command: Literal['login', None]
+    command: Literal['login', 'session', 'sessions', None]
 
     # login
     login_by_sessid: bool
@@ -30,6 +30,7 @@ def main():
     login.add_argument("--sessid", dest="login_by_sessid", action="store_true")
 
     session = commands.add_parser("session", help="Get session info")
+    sessions = commands.add_parser("sessions", help="Get list of sessions")
 
     args = parser.parse_args(namespace=_Args())
 
@@ -45,6 +46,8 @@ def do_cmd(parser: argparse.ArgumentParser, args: _Args) -> None:
             cmd.login(args.login_by_sessid)
         case "session":
             cmd.session()
+        case "sessions":
+            cmd.sessions()
         case _:
             parser.print_help()
 
