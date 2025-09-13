@@ -15,8 +15,7 @@ def login(login_by_sessid: bool):
 
         sess = sa.login_by_id(sessid)
         if not sess.username:
-            warnings.warn("Invalid session ID")
-            return
+            raise ValueError("Invalid session ID")
     else:
         username = input("Username: ")
         password = getpass()
