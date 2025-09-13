@@ -62,4 +62,8 @@ class _TypedCookies:
     def current_group(self) -> GROUP:
         return self.groups.get(self.current_group_name, {})
 
+    @current_group.setter
+    def current_group(self, value: GROUP):
+        self.groups |= {self.current_group_name: value}
+
 cookies = _TypedCookies()

@@ -4,10 +4,17 @@ from scratch_cli.typed_cookies import cookies
 
 
 def none():
-    print(f"Reading members of {cookies.current_group_name!r}")
+    if cookies.current_group_name == '':
+        print(f"Listing all groups, not in a group")
+        for _group in cookies.groups.values():
+            print('-', _group["name"])
+        return
 
-    for session in cookies.groups.get(cookies.current_group_name, {}).get("sessions", []):
-        print(session)
+    _group = cookies.current_group
+    print(f"Reading members of {_group['name']!r}")
+
+    for session in _group['sessions']:
+        print('-', session['username'])
 
 
 def group(parser: argparse.ArgumentParser, cmd):

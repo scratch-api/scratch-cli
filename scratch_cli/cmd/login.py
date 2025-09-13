@@ -5,6 +5,7 @@ from getpass import getpass
 import scratchattach as sa
 
 from scratch_cli.typed_cookies import cookies
+import scratch_cli.typed_cookies as t
 from scratch_cli import serialize
 
 warnings.filterwarnings("ignore", category=sa.LoginDataWarning)
@@ -26,9 +27,20 @@ def login(login_by_sessid: bool):
 
 
 def register_session(sess: sa.Session):
+    serialized = serialize.session(sess)
+
     if cookies.current_group_name == '':
         group_name = sess.username.lower()
-        cookies.groups |= {group_name: serialize.session(sess)}
+
+        i = 2
+        old_name = group_name
+        while group_name in cookies.groups:
+            group_name = f"{old_name}_{i}"
+
+        new_group: t.GROUP = {"name": group_name, "sessions": [serialized]}
+
+
+        cookies.groups |= {group_name: new_group}
         cookies.current_group_name = group_name
     else:
-        ...
+        cookies.current_group |= {"sessions": cookies.current_group["sessions"] + [serialized]}
