@@ -11,17 +11,23 @@ from scratch_cli.util import split_trailing_number
 
 import pydantic
 
+
 class InputSettings(TypedDict):
     content: str
     replace: bool
+
 
 class Profile(TypedDict):
     about_me: NotRequired[InputSettings]
     wiwo: NotRequired[InputSettings]
 
+
 class SCLIConfig(TypedDict):
     test: NotRequired[str]
     profile: NotRequired[Profile]
+
+
+scli_validator = pydantic.TypeAdapter(SCLIConfig)
 
 
 def scli_config(self: sa.User) -> SCLIConfig:
@@ -63,8 +69,6 @@ def scli_config(self: sa.User) -> SCLIConfig:
         warnings.warn(f"Could not decode SCLI comment: {_comment=}")
         return {}
 
-    scli_validator = pydantic.TypeAdapter(SCLIConfig)
-
     try:
         return scli_validator.validate_python(data)
     except pydantic.ValidationError:
@@ -72,5 +76,25 @@ def scli_config(self: sa.User) -> SCLIConfig:
         return {}
 
 
+def generate_scli_config(data: SCLIConfig):
+    scli_validator.validate_python(data)
+
+    stage = editor.Sprite(True, "_stage_")
+    project = editor.Project("_SCLI_CONFIG_", _sprites=[stage])
+
+    stage.add_comment(editor.Comment(
+        stage.new_id,
+        text=f"{json.dumps(data)}\n_SCLI_CONFIG_",
+    ))
+
+    stage.costumes.append(editor.Costume())
+
+    return project
+
+
 if __name__ == '__main__':
     print(split_trailing_number("Browsing scratch in a terminal, far, far away...\n\n\n\n1216591875"))
+
+    print(generate_scli_config({
+                             'test': "This is verified by pydantic. It's also the only key where you're allowed to put anything you want, so long as it's a string.",
+                             'profile': {'about_me': {'content': 'Idk', 'replace': True}}}))
