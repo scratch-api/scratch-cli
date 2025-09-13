@@ -6,7 +6,13 @@ from scratch_cli.__about__ import __version__
 
 
 class _Args(argparse.Namespace):
-    command: Literal['login', 'group', 'groups', 'ungroup', 'profile', None]
+    command: Literal['login', 'group', 'groups', 'ungroup', 'profile', 'find', None]
+
+    # find
+    offset: int
+    limit: int
+    user: Optional[str]
+    mode: Optional[str]
 
     # login
     login_by_sessid: bool
@@ -42,6 +48,16 @@ def main():
 
     profile = commands.add_parser("profile", help="View your profile")
 
+    find = commands.add_parser("find",
+                               help="Find projects, studios, etc.")
+    find.add_argument("-O", "--offset", default=0, type=int, dest="offset",
+                      help="Offset from which to start the search.")
+    find.add_argument("-L", "--limit", default=10, type=int, dest="limit",
+                      help="Offset from which to start the search.")
+    find.add_argument("-U", "--user", dest="user",
+                      help="User to search for projects (shared, loved, favorite)")
+    find.add_argument("mode", nargs="?", help="What we are searching for")
+
     args = parser.parse_args(namespace=_Args())
 
     do_cmd(parser, args)
@@ -59,6 +75,13 @@ def do_cmd(parser: argparse.ArgumentParser, args: _Args) -> None:
             cmd.ungroup()
         case "profile":
             cmd.profile()
+        case "find":
+            cmd.find(
+                offset=args.offset,
+                limit=args.limit,
+                user=args.user,
+                mode=args.mode
+            )
         case _:
             parser.print_help()
 
