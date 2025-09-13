@@ -29,7 +29,7 @@ def login(login_by_sessid: bool):
 def register_session(sess: sa.Session):
     serialized = serialize.session(sess)
 
-    if cookies.current_group_name == '':
+    if cookies.current_group_id == '':
         group_name = sess.username.lower()
 
         i = 2
@@ -41,6 +41,6 @@ def register_session(sess: sa.Session):
 
 
         cookies.groups |= {group_name: new_group}
-        cookies.current_group_name = group_name
+        cookies.current_group_id = group_name
     else:
         cookies.current_group |= {"sessions": cookies.current_group["sessions"] + [serialized]}
