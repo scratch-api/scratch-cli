@@ -35,5 +35,8 @@ class _Cookies:
     def get(self, __key: str, __default=None):
         return self.data.get(__key, __default)
 
-
+"""
+Data storage documentation:
+sessions: list[str]
+"""
 cookies = _Cookies()

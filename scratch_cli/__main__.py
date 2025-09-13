@@ -1,11 +1,15 @@
 import argparse
-from typing import Literal
+from typing import Literal, Optional
 
+from scratch_cli.login import login as cmd_login
 from scratch_cli.util import ERROR_MSG
 from scratch_cli.__about__ import __version__
 
 class _Args(argparse.Namespace):
     command: Literal['login', None]
+
+    # login
+    login_by_sessid: bool
 
 def main():
     parser = argparse.ArgumentParser(
@@ -16,21 +20,19 @@ def main():
     commands = parser.add_subparsers(dest="command")
 
     login = commands.add_parser("login", help="Login to Scratch")
-    login.add_argument("username")
-    login.add_argument("password")
+    login.add_argument("--sessid", dest="login_by_sessid", action="store_true",)
 
     args = parser.parse_args(namespace=_Args())
 
     try:
         cmd(parser, args)
     except Exception as e:
-        print(ERROR_MSG)
-        raise e
+        raise Exception(ERROR_MSG) from e
 
 def cmd(parser: argparse.ArgumentParser, args: _Args) -> None:
     match args.command:
         case "login":
-            ...
+            cmd_login(args.login_by_sessid)
         case _:
             parser.print_help()
 
