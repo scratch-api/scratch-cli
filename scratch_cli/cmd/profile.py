@@ -2,8 +2,6 @@ from scratch_cli.decorator import sessionable
 from scratch_cli.context import context
 from scratch_cli import assets
 
-import rich
-from rich.markdown import Markdown
 from rich.color import Color
 
 RESET = "\x1b[0m"
