@@ -41,11 +41,14 @@ def user_profile(self: sa.User):
     ocular = 'No ocular status'
 
     if status := ocular_data.get("status"):
+        color_str = ''
         color = ocular_data.get("color")
-        codes = Color.parse(color).get_ansi_codes()
-        color_code = f"\x1b[{';'.join(codes)}m"
+        if color is not None:
+            codes = Color.parse(color).get_ansi_codes()
+            color_code = f"\x1b[{';'.join(codes)}m"
+            color_str = f" {color_code}⬤{RESET}"
 
-        ocular = f"*{status}* {color_code}⬤{RESET}"
+        ocular = f"*{status}*{color_str}"
 
     return rfmt.md_fp(
         "user_profile.md",
@@ -57,8 +60,8 @@ def user_profile(self: sa.User):
         country=self.country,
         ocular=ocular,
         join_date=self.join_date,
-        about_me=rfmt.quote(self.about_me),
-        wiwo=rfmt.quote(self.wiwo),
+        about_me=rfmt.quote(rfmt.escape(self.about_me)),
+        wiwo=rfmt.quote(rfmt.escape(self.wiwo)),
         message_count=self.message_count(),
         featured=featured_project(self.featured_data())
     )

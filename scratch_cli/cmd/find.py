@@ -15,7 +15,7 @@ def find_in_session(*,
                     mode: Optional[str]):
     sess = context.session
 
-    match mode.lower():
+    match mode:
         case 'lovefeed':
             # Projects loved by scratchers I'm following
 
@@ -54,15 +54,15 @@ def find(*,
                     projects=safmt.collate(safmt.project, user.favorites(limit=limit, offset=offset))
                 )
 
-            case "shared" | None:
+            case "shared":
                 rfmt.print_fp(
                     "shared.md",
                     username=user.name,
                     projects=safmt.collate(safmt.project, user.projects(limit=limit, offset=offset))
                 )
 
-            case _:
-                print(f"Invalid mode: {mode!r}")
+            case None:
+                rfmt.print_md(safmt.user_profile(user))
 
         return
 
