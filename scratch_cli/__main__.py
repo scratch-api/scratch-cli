@@ -8,10 +8,13 @@ from scratch_cli.__about__ import __version__
 
 class _Args(argparse.Namespace):
     do_with_all: bool
-    command: Literal['login', 'session', 'sessions', None]
+    command: Literal['login', 'group', 'groups', None]
 
     # login
     login_by_sessid: bool
+
+    # group
+    group_command: str
 
 
 def main():
@@ -30,7 +33,14 @@ def main():
     login.add_argument("--sessid", dest="login_by_sessid", action="store_true")
 
     group = commands.add_parser("group", help="Get current group info")
+    group_commands = group.add_subparsers(dest="group_command")
+    group_commands.add_parser("switch", help="Switch current group to another")
+
     groups = commands.add_parser("groups", help="Get list of groups")
+    ungroup = commands.add_parser("ungroup",
+                                  help="This exits the current group and into the 'global' group. "
+                                       "If you login now, it will make a new group with only 1 member, "
+                                       "which you will automatically enter.")
 
     args = parser.parse_args(namespace=_Args())
 
@@ -48,6 +58,8 @@ def do_cmd(parser: argparse.ArgumentParser, args: _Args) -> None:
             cmd.group()
         case "groups":
             cmd.groups()
+        case "ungroup":
+            cmd.ungroup()
         case _:
             parser.print_help()
 
