@@ -1,9 +1,10 @@
 from typing import Optional
 
+import scratchattach as sa
+
 from scratch_cli.context import context
 from scratch_cli import rfmt
 from scratch_cli import safmt
-import scratchattach as sa
 
 def find(*,
          offset: int,
@@ -15,9 +16,17 @@ def find(*,
         user: sa.User = context.session.connect_user(user)
 
         match mode:
-            case "shared" | _:
+            case "loved" | "loves":
+                for project in user.loves(limit=limit, offset=offset):
+                    rfmt.print_md(safmt.project(project))
+            case "faved" | "faves" | "favorited" | "favorites":
+                for project in user.favorites(limit=limit, offset=offset):
+                    rfmt.print_md(safmt.project(project))
+            case "shared" | None:
                 for project in user.projects(limit=limit, offset=offset):
                     rfmt.print_md(safmt.project(project))
+            case _:
+                print(f"Invalid mode: {mode!r}")
 
         return
 

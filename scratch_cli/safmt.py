@@ -10,6 +10,9 @@ RESET = "\x1b[0m"
 
 
 def project(self: sa.Project):
+    if not hasattr(self, "author_name"):
+        self.update()
+
     return rfmt.md_fp(
         "project.md",
         title=self.title,
