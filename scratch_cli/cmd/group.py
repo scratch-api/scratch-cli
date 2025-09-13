@@ -1,7 +1,7 @@
 import argparse
 
 from scratch_cli.typed_cookies import cookies
-
+from scratch_cli.util import ERROR_MSG
 
 def print_all_groups():
     for _group in cookies.groups.values():
@@ -57,5 +57,7 @@ def group(parser: argparse.ArgumentParser, cmd):
             switch()
         case "rename":
             rename()
+        case "delete":
+            raise NotImplementedError(ERROR_MSG)
         case _:
             parser.print_help()
