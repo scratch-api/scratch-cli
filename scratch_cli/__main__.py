@@ -7,7 +7,6 @@ from scratch_cli.__about__ import __version__
 
 
 class _Args(argparse.Namespace):
-    do_with_all: bool
     command: Literal['login', 'group', 'groups', None]
 
     # login
@@ -23,8 +22,6 @@ def main():
         description='Scratch command line interface',
         epilog=f"Scratch CLI {__version__}"
     )
-
-    parser.add_argument("-A", "--all", action="store_true", help="Perform action with all accounts", dest="do_with_all")
 
     # # # # # Commands # # # # #
     commands = parser.add_subparsers(dest="command")
