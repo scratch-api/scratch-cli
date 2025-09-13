@@ -1,6 +1,6 @@
-from scratch_cli.cookies import cookies
+from scratch_cli.typed_cookies import cookies
 
 
-def sessions():
-    for i, session in enumerate(cookies.sessions):
-        print(f"{i}. {session.username}")
+def groups():
+    for group in cookies.groups.values():
+        print(f"{group}")

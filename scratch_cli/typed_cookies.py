@@ -50,12 +50,16 @@ class _TypedCookies:
         PARTIAL_TYPED["cache"] = value
 
     @property
-    def current_group(self) -> str:
+    def current_group_name(self) -> str:
         return self.cache.get("current_group", '')
 
-    @current_group.setter
-    def current_group(self, value: str):
+    @current_group_name.setter
+    def current_group_name(self, value: str):
         self.cache = self.cache | {"current_group": value}
 
+    # # Utility methods
+    @property
+    def current_group(self) -> GROUP:
+        return self.groups.get(self.current_group_name, {})
 
 cookies = _TypedCookies()

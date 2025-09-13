@@ -11,7 +11,7 @@ class _Context:
     _session: Optional[sa.Session] = None
 
     @property
-    def group(self):
-        return cookies.current_group
+    def current_group_name(self):
+        return cookies.current_group_name
 
 context = _Context()

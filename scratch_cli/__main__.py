@@ -29,8 +29,8 @@ def main():
     login = commands.add_parser("login", help="Login to Scratch")
     login.add_argument("--sessid", dest="login_by_sessid", action="store_true")
 
-    session = commands.add_parser("session", help="Get session info")
-    sessions = commands.add_parser("sessions", help="Get list of sessions")
+    group = commands.add_parser("group", help="Get current group info")
+    groups = commands.add_parser("groups", help="Get list of groups")
 
     args = parser.parse_args(namespace=_Args())
 
@@ -44,10 +44,10 @@ def do_cmd(parser: argparse.ArgumentParser, args: _Args) -> None:
     match args.command:
         case "login":
             cmd.login(args.login_by_sessid)
-        case "session":
-            cmd.session()
-        case "sessions":
-            cmd.sessions()
+        case "group":
+            cmd.group()
+        case "groups":
+            cmd.groups()
         case _:
             parser.print_help()
 
