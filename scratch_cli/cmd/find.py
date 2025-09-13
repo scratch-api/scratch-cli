@@ -5,6 +5,29 @@ import scratchattach as sa
 from scratch_cli.context import context
 from scratch_cli import rfmt
 from scratch_cli import safmt
+from scratch_cli.decorator import sessionable
+
+@sessionable
+def find_in_session(*,
+                    offset: int,
+                    limit: int,
+                    mode: Optional[str]):
+    sess = context.session
+
+    match mode.lower():
+        case 'lovefeed':
+            # Projects loved by scratchers I'm following
+
+            rfmt.print_fp(
+                "lovefeed.md",
+                username=sess.username,
+                projects='\n'.join(safmt.project(p) for p in sess.loved_by_followed_users(limit=limit, offset=offset))
+            )
+        case _:
+            find(offset=offset,
+                 limit=limit,
+                 mode=mode,
+                 user=sess.connect_linked_user())
 
 def find(*,
          offset: int,
@@ -30,4 +53,9 @@ def find(*,
 
         return
 
-    print(f"{offset=}, {limit=}, {user=}, {mode=}")
+    # assume we are in session mode
+    find_in_session(
+        offset=offset,
+        limit=limit,
+        mode=mode,
+    )
