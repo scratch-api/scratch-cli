@@ -6,7 +6,7 @@ from scratch_cli.__about__ import __version__
 
 
 class _Args(argparse.Namespace):
-    command: Literal['login', 'group', 'groups', 'ungroup', None]
+    command: Literal['login', 'group', 'groups', 'ungroup', 'profile', None]
 
     # login
     login_by_sessid: bool
@@ -40,6 +40,8 @@ def main():
                                        "If you login now, it will make a new group with only 1 member, "
                                        "which you will automatically enter.")
 
+    profile = commands.add_parser("profile", help="View your profile")
+
     args = parser.parse_args(namespace=_Args())
 
     do_cmd(parser, args)
@@ -55,6 +57,8 @@ def do_cmd(parser: argparse.ArgumentParser, args: _Args) -> None:
             cmd.groups()
         case "ungroup":
             cmd.ungroup()
+        case "profile":
+            cmd.profile()
         case _:
             parser.print_help()
 
