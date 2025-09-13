@@ -1,5 +1,4 @@
 import argparse
-import warnings
 from typing import Literal, Optional
 
 from scratch_cli import cmd
