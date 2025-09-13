@@ -12,6 +12,6 @@ class _Context:
 
     @property
     def group(self):
-        return
+        return cookies.current_group
 
 context = _Context()
