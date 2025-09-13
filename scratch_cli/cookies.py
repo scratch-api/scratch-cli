@@ -3,6 +3,8 @@ import json
 
 from typing import Any
 
+import scratchattach as sa
+
 from scratch_cli import appdata
 
 
@@ -35,8 +37,17 @@ class _Cookies:
     def get(self, __key: str, __default=None):
         return self.data.get(__key, __default)
 
+    @property
+    def sessions(self):
+        # reverse to start with most recent session
+        for sessid in self.get('sessions', [])[::-1]:
+            yield sa.login_by_id(sessid)
+
+
+cookies = _Cookies()
 """
 Data storage documentation:
+
 sessions: list[str]
+
 """
-cookies = _Cookies()
