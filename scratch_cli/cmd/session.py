@@ -4,4 +4,4 @@ from pprint import pprint
 
 
 def session():
-    pprint(context.session.__dict__)
+    pprint(context.group)

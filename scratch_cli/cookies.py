@@ -1,4 +1,6 @@
 # store 'cookies' in appdata
+from __future__ import annotations
+
 import json
 
 from typing import Any
@@ -45,9 +47,3 @@ class _Cookies:
 
 
 cookies = _Cookies()
-"""
-Data storage documentation:
-
-sessions: list[str]
-
-"""

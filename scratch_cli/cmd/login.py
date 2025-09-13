@@ -25,6 +25,6 @@ def login(login_by_sessid: bool):
 
 
 def register_session(sess: sa.Session):
-    sessions = cookies.get("sessions", [])
-    sessions.append(sess.id)
-    cookies["sessions"] = sessions
+    sessions = cookies.get("groups", {})
+
+    cookies["groups"] = sessions
