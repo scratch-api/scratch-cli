@@ -1,0 +1,3 @@
+# Favorited projects ({username})
+
+{projects}

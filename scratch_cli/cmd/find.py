@@ -7,6 +7,7 @@ from scratch_cli import rfmt
 from scratch_cli import safmt
 from scratch_cli.decorator import sessionable
 
+
 @sessionable
 def find_in_session(*,
                     offset: int,
@@ -21,7 +22,7 @@ def find_in_session(*,
             rfmt.print_fp(
                 "lovefeed.md",
                 username=sess.username,
-                projects='\n'.join(safmt.project(p) for p in sess.loved_by_followed_users(limit=limit, offset=offset))
+                projects=safmt.collate(safmt.project, sess.loved_by_followed_users(limit=limit, offset=offset))
             )
         case _:
             find(offset=offset,
@@ -29,25 +30,37 @@ def find_in_session(*,
                  mode=mode,
                  user=sess.connect_linked_user())
 
+
 def find(*,
          offset: int,
          limit: int,
          user: Optional[str] = None,
-         mode: Optional[str] = None,):
-
+         mode: Optional[str] = None, ):
     if user:
         user: sa.User = context.session.connect_user(user)
 
         match mode:
             case "loved" | "loves":
-                for project in user.loves(limit=limit, offset=offset):
-                    rfmt.print_md(safmt.project(project))
+                rfmt.print_fp(
+                    "loves.md",
+                    username=user.name,
+                    projects=safmt.collate(safmt.project, user.loves(limit=limit, offset=offset))
+                )
+
             case "faved" | "faves" | "favorited" | "favorites":
-                for project in user.favorites(limit=limit, offset=offset):
-                    rfmt.print_md(safmt.project(project))
+                rfmt.print_fp(
+                    "faves.md",
+                    username=user.name,
+                    projects=safmt.collate(safmt.project, user.favorites(limit=limit, offset=offset))
+                )
+
             case "shared" | None:
-                for project in user.projects(limit=limit, offset=offset):
-                    rfmt.print_md(safmt.project(project))
+                rfmt.print_fp(
+                    "shared.md",
+                    username=user.name,
+                    projects=safmt.collate(safmt.project, user.projects(limit=limit, offset=offset))
+                )
+
             case _:
                 print(f"Invalid mode: {mode!r}")
 

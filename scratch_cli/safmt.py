@@ -1,5 +1,5 @@
 # format sa objects
-from typing import Optional
+from typing import Optional, Iterable
 
 import scratchattach as sa
 from scratch_cli import rfmt
@@ -8,6 +8,8 @@ from rich.color import Color
 
 RESET = "\x1b[0m"
 
+def collate(func, for_objs: Iterable) -> str:
+    return '\n'.join(func(obj) for obj in for_objs)
 
 def project(self: sa.Project):
     if not hasattr(self, "author_name"):
