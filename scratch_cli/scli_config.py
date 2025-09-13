@@ -11,9 +11,17 @@ from scratch_cli.util import split_trailing_number
 
 import pydantic
 
+class InputSettings(TypedDict):
+    content: str
+    replace: bool
+
+class Profile(TypedDict):
+    about_me: NotRequired[InputSettings]
+    wiwo: NotRequired[InputSettings]
 
 class SCLIConfig(TypedDict):
     test: NotRequired[str]
+    profile: NotRequired[Profile]
 
 
 def scli_config(self: sa.User) -> SCLIConfig:
