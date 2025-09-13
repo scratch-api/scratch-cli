@@ -7,13 +7,13 @@ from scratch_cli.__about__ import __version__
 
 
 class _Args(argparse.Namespace):
-    command: Literal['login', 'group', 'groups', None]
+    command: Literal['login', 'group', 'groups', 'ungroup', None]
 
     # login
     login_by_sessid: bool
 
     # group
-    group_command: str
+    group_command: Literal['switch', None]
 
 
 def main():
@@ -45,14 +45,11 @@ def main():
 
 
 def do_cmd(parser: argparse.ArgumentParser, args: _Args) -> None:
-    if args.do_with_all:
-        warnings.warn("Performing action with all accounts")
-
     match args.command:
         case "login":
             cmd.login(args.login_by_sessid)
         case "group":
-            cmd.group()
+            cmd.group(parser, args.group_command)
         case "groups":
             cmd.groups()
         case "ungroup":
