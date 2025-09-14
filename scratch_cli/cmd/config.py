@@ -10,7 +10,7 @@ from scratch_cli import rfmt, safmt
 from scratch_cli import appdata
 from scratch_cli import util
 
-from scratch_cli.cmd.group import none as print_group_members
+from scratch_cli.cmd.group import print_group_members as print_group_members, select_group_member
 
 from scratchattach.utils import exceptions as sa_exceptions
 
@@ -71,8 +71,8 @@ def edit_config(username: str):
 def config(command: Optional[str]):
     match command:
         case "edit":
-            print_group_members()
-            edit_config(input("Edit which: "))
+            assert (session := select_group_member()) is not None
+            edit_config(session['username'])
 
         case None:
             print_configs()

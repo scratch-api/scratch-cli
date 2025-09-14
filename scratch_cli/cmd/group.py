@@ -1,13 +1,15 @@
 import argparse
+from typing import Optional
 
 from scratch_cli.typed_cookies import cookies
+from scratch_cli import typed_cookies as t
 from scratch_cli.util import ERROR_MSG
 
 def print_all_groups():
     for _group in cookies.groups.values():
         print('-', _group["name"])
 
-def none():
+def print_group_members():
     if cookies.current_group_id == '':
         print(f"Listing all groups, not in a group")
         print_all_groups()
@@ -16,8 +18,25 @@ def none():
     _group = cookies.current_group
     print(f"Reading members of {_group['name']!r}")
 
+    for i, session in enumerate(_group['sessions']):
+        print(f"{i}. {session['username']}")
+
+def select_group_member() -> Optional[t.SESSION]:
+    print_group_members()
+    selector = input("Select a group member: ")
+
+    _group = cookies.current_group
+
     for session in _group['sessions']:
-        print('-', session['username'])
+        if session['username'] == selector:
+            return session
+
+    if selector.isnumeric():
+        selector = int(selector)
+        if selector < len(_group['sessions']):
+            return _group['sessions'][selector]
+
+    return None
 
 def switch():
     print(f"All groups::")
@@ -52,7 +71,7 @@ def rename():
 def group(parser: argparse.ArgumentParser, cmd):
     match cmd:
         case None:
-            none()
+            print_group_members()
         case "switch":
             switch()
         case "rename":
