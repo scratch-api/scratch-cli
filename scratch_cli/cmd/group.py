@@ -2,8 +2,11 @@ import argparse
 from typing import Optional
 
 from scratch_cli.typed_cookies import cookies
+from scratch_cli.context import context
 from scratch_cli import typed_cookies as t
 from scratch_cli.util import ERROR_MSG
+
+import scratchattach as sa
 
 def print_all_groups():
     for _group in cookies.groups.values():
@@ -21,28 +24,42 @@ def print_group_members():
     for i, session in enumerate(_group['sessions']):
         print(f"{i}. {session['username']}")
 
-def select_group_member() -> Optional[t.SESSION]:
+def select_group_member(error: bool=True):
+    """
+    This will select a session and send it to context
+    :return:
+    """
     _group = cookies.current_group
     if len(_group['sessions']) == 1:
-        return _group['sessions'][0]
+        sess = _group['sessions'][0]
+        context.session = sa.login_by_id(sess["id"], username=sess["username"])
+        return
+    elif len(_group['sessions']) == 0:
+        if error:
+            raise Exception("No sessions")
+        return
 
     print_group_members()
     selector = input("Select a group member: ")
 
 
-    for session in _group['sessions']:
-        if session['username'] == selector:
-            return session
+    for sess in _group['sessions']:
+        if sess['username'] == selector:
+            context.session = sa.login_by_id(sess["id"], username=sess["username"])
+            return
 
     if selector.isnumeric():
         selector = int(selector)
         if selector < len(_group['sessions']):
-            return _group['sessions'][selector]
+            sess = _group['sessions'][selector]
+            context.session = sa.login_by_id(sess["id"], username=sess["username"])
+            return
 
-    return None
+    if error:
+        raise Exception(f"Invalid selection: {selector}")
 
 def switch():
-    print(f"All groups::")
+    print(f"All groups:")
     print_all_groups()
 
     group_name = input("Enter group name: ")

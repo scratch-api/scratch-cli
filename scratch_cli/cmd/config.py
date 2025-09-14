@@ -31,14 +31,9 @@ SCLI_CONFIG{url}:
 ```""")
 
 
-@sessionable
-def edit_config(username: str):
+def edit_config():
     session = context.session
     user = session.connect_linked_user()
-
-    if user.username.lower() != username.lower():
-        return None
-
     username = user.username
 
     data = scli_config(user)
@@ -75,8 +70,8 @@ def edit_config(username: str):
 def config(command: Optional[str]):
     match command:
         case "edit":
-            assert (session := select_group_member()) is not None
-            edit_config(session['username'])
+            select_group_member()
+            edit_config()
 
         case None:
             print_configs()
