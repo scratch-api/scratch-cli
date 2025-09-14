@@ -32,8 +32,8 @@ def find_in_session(*,
 
 
 def find(*,
-         offset: int,
-         limit: int,
+         offset: int = 0,
+         limit: int = 10,
          user: Optional[str] = None,
          mode: Optional[str] = None, ):
     if user:

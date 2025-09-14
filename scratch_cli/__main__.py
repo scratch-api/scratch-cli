@@ -41,12 +41,15 @@ def main():
                               help="Offset from which to start the search.")
             find.add_argument("-L", "--limit", default=10, type=int, dest="limit",
                               help="Offset from which to start the search.")
-            find.add_argument("-U", "--user", dest="user",
+            find.add_argument("-U", "--user", dest="username",
                               help="User to search for projects (shared, loved, favorite)")
             find.add_argument("mode", nargs="?", help="What we are searching for")
 
         if config := commands.add_parser("config", help="View your PUBLIC _SCLI_CONFIG_"):
             config.add_subparsers(dest="config_command").add_parser("edit", help="Edit your scli config")
+
+    parser.add_argument("-U", "--user", dest="username",
+                        help="Get user by username")
 
     args = parser.parse_args(namespace=_Args())
 
@@ -69,7 +72,7 @@ def do_cmd(parser: argparse.ArgumentParser, args: _Args) -> None:
             cmd.find(
                 offset=args.offset,
                 limit=args.limit,
-                user=args.user,
+                user=args.username,
                 mode=args.mode
             ),
         case "config":
@@ -77,6 +80,10 @@ def do_cmd(parser: argparse.ArgumentParser, args: _Args) -> None:
                 args.config_command
             )
         case _:
+            if args.username:
+                cmd.find(user=args.username)
+                return
+
             parser.print_help()
 
 
