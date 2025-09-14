@@ -85,8 +85,7 @@ def user_profile(self: sa.User):
 
         username=self.name,
         id=self.id,
-        rank="Scratch Team" if self.scratchteam else ["Scratcher", "New scratcher"][
-            self.is_new_scratcher()],
+        rank=user_rank(self),
         country=self.country,
         ocular=ocular,
         join_date=self.join_date,
@@ -95,3 +94,16 @@ def user_profile(self: sa.User):
         message_count=self.message_count(),
         featured=featured_project(self.featured_data())
     )
+
+def user_rank(self: sa.User):
+    if self.scratchteam:
+        return "Scratch Team"
+    status = self.is_new_scratcher()
+
+    if status is None:
+        return "Unknown"
+
+    if status:
+        return "New scratcher"
+    else:
+        return "Scratcher"
