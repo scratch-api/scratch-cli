@@ -53,6 +53,25 @@ def _handle_configurable_markdownable(raw: str, content: Optional[str], replace:
             return f'{raw}{splitter}{content}'
     return raw
 
+def project_page(self: sa.Project):
+    # todo: allow for project-specific scli config
+
+    return rfmt.md_fp(
+        "project_page.md",
+        title=rfmt.escape(self.title),
+        author=self.author_name if hasattr(self, "author_name") else None,
+        id=self.id,
+        instructions=rfmt.quote(_handle_configurable_markdownable(rfmt.escape(self.instructions), "", False)),
+        notes=rfmt.quote(_handle_configurable_markdownable(rfmt.escape(self.notes), "", False)),
+        views=self.views,
+        loves=self.loves,
+        faves=self.favorites,
+        remix_count=self.remix_count,
+        created=self.created,
+        last_modified=self.last_modified,
+        commenting_status="on" if self.comments_allowed else "off",
+        remix_parent=self.remix_parent
+    )
 
 def user_profile(self: sa.User):
     config = scli_config(self)

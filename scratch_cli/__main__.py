@@ -49,7 +49,10 @@ def main():
             config.add_subparsers(dest="config_command").add_parser("edit", help="Edit your scli config")
 
     parser.add_argument("-U", "--user", dest="username",
-                        help="Get user by username")
+                        help="Get user by name")
+
+    parser.add_argument("-P", "--project", type=int, dest="project_id",
+                        help="Get project by id")
 
     args = parser.parse_args(namespace=_Args())
 
@@ -82,6 +85,9 @@ def do_cmd(parser: argparse.ArgumentParser, args: _Args) -> None:
         case _:
             if args.username:
                 cmd.find(user=args.username)
+                return
+            if args.project_id:
+                cmd.find(project=args.project_id)
                 return
 
             parser.print_help()

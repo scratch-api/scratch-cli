@@ -35,6 +35,7 @@ def find(*,
          offset: int = 0,
          limit: int = 10,
          user: Optional[str] = None,
+         project: Optional[int] = None,
          mode: Optional[str] = None, ):
     if user:
         user: sa.User = context.session.connect_user(user)
@@ -67,6 +68,15 @@ def find(*,
 
             case None:
                 rfmt.print_md(safmt.user_profile(user))
+
+        return
+
+    if project:
+        project: sa.Project = context.session.connect_project(project)
+
+        match mode:
+            case "page" | None:
+                rfmt.print_md(safmt.project_page(project))
 
         return
 
