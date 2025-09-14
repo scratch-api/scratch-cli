@@ -1,8 +1,10 @@
 import argparse
+from typing import Optional
 
 from scratch_cli.cookies import cookies, t
 from scratch_cli.context import context
 from scratch_cli.util import ERROR_MSG
+from scratch_cli._args import Args as _Args
 
 import scratchattach as sa
 
@@ -55,13 +57,15 @@ def select_group_member(error: bool=True):
     if error:
         raise Exception(f"Invalid selection: {selector}")
 
-def switch():
-    print(f"All groups:")
-    print_all_groups()
+def switch(group_name: Optional[str]):
+    if not group_name:
+        print(f"All groups:")
+        print_all_groups()
 
-    group_name = input("Enter group name: ")
+        group_name = input("Enter group name: ")
 
-    assert group_name in cookies.groups, f"invalid name {group_name!r}"
+    group_name = group_name.lower()
+    assert group_name in cookies.groups, f"Invalid name {group_name!r}"
 
     cookies.current_group_id = group_name
 
@@ -71,7 +75,7 @@ def rename():
     group_name = input(f"Enter new group name for {cookies.current_group.name!r}: ")
     group_id = group_name.lower()
 
-    assert group_id not in cookies.groups, f"Existing name {group_name!r}"
+    assert group_id not in cookies.groups or group_id == cookies.current_group_id, f"Existing name {group_name!r}"
     assert group_id != '', "Invalid name"
 
     cookies.current_group.name = group_name
@@ -79,12 +83,12 @@ def rename():
     cookies.groups[group_id] = cookies.groups.pop(cookies.current_group_id)
 
 
-def group(parser: argparse.ArgumentParser, cmd):
-    match cmd:
+def group(parser: argparse.ArgumentParser, args: _Args):
+    match args.group_command:
         case None:
             print_group_members()
         case "switch":
-            switch()
+            switch(args.name)
         case "rename":
             rename()
         case "delete":
