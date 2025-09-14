@@ -75,24 +75,22 @@ def scli_config_from_project(self: sa.Project) -> SCLIConfig:
         warnings.warn(f"Invalid SCLI comment: {_comment=}")
         return {}
 
-
-
-def scli_config_with_id(self: sa.User) -> tuple[SCLIConfig, Optional[int]]:
+def scli_config_with_project(self: sa.User) -> tuple[SCLIConfig, Optional[sa.Project]]:
     project_id = scli_config_project_id(self)
     if not project_id:
         return SCLIConfig(), None
     try:
         _project = validate_scli_config_project_page(project_id, self.username)
     except (AssertionError, sa_exceptions.ProjectNotFound):
-        return SCLIConfig(), project_id
+        return SCLIConfig(), None
 
-    return scli_config_from_project(_project), project_id
+    return scli_config_from_project(_project), _project
 
 def scli_config(self: sa.User) -> SCLIConfig:
     """
     Get and return SCLI config data, if any. If none, return empty dict.
     """
-    return scli_config_with_id(self)[0]
+    return scli_config_with_project(self)[0]
 
 def generate_scli_config(data: SCLIConfig):
     scli_validator.validate_python(data)

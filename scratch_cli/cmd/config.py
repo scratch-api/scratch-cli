@@ -5,7 +5,7 @@ from typing import Optional
 from scratch_cli.decorator import sessionable, EXIT_SESSION_LOOP
 
 from scratch_cli.context import context
-from scratch_cli.scli_config import scli_config_with_id, scli_config, scli_validator, generate_scli_config, validate_scli_config_project_page, scli_config_project_id
+from scratch_cli.scli_config import scli_config_with_project, scli_config, scli_validator, generate_scli_config, validate_scli_config_project_page, scli_config_project_id
 from scratch_cli import rfmt, safmt
 from scratch_cli import appdata
 from scratch_cli import util
@@ -17,9 +17,9 @@ from scratchattach.utils import exceptions as sa_exceptions
 @sessionable
 def print_configs():
     user = context.session.connect_linked_user()
-    data, project_id = scli_config_with_id(user)
+    data, project = scli_config_with_project(user)
 
-    url = f" (https://scratch.mit.edu/projects/{project_id}/)" if project_id else ''
+    url = f" (https://scratch.mit.edu/projects/{project.id}/)" if project else ' (None)'
 
     rfmt.print_md(
         safmt.user(user) + f"""\
