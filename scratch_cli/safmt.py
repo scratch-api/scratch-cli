@@ -38,6 +38,7 @@ def featured_project(self: Optional[dict[str, str | dict[str, str]]]):
         id=self_project.get("id")
     ) if self else '###### No featured project'
 
+
 def user(self: sa.User):
     return rfmt.md_fp(
         "user.md",
@@ -46,8 +47,28 @@ def user(self: sa.User):
     )
 
 
+def _handle_configurable_markdownable(raw: str, content: Optional[str], replace: bool,
+                                      splitter: str = '\n\n---\n\n') -> str:
+    if content:
+        if replace:
+            return content
+        else:
+            return f'{raw}{splitter}{content}'
+    return raw
+
+
 def user_profile(self: sa.User):
-    print(scli_config(self))
+    config = scli_config(self)
+    config_profile = config.get("profile", {})
+
+    # handle bio and wiwo
+    wiwo = rfmt.escape(self.wiwo)
+
+    config_about_me = config_profile.get("about_me", {})
+    about_me_raw = _handle_configurable_markdownable(
+        rfmt.escape(self.about_me),
+        config_about_me.get("content"),
+        config_about_me.get("replace", True))
 
     ocular_data = self.ocular_status()
     ocular = 'No ocular status'
@@ -72,8 +93,8 @@ def user_profile(self: sa.User):
         country=self.country,
         ocular=ocular,
         join_date=self.join_date,
-        about_me=rfmt.quote(rfmt.escape(self.about_me)),
-        wiwo=rfmt.quote(rfmt.escape(self.wiwo)),
+        about_me=rfmt.quote(about_me_raw),
+        wiwo=rfmt.quote(wiwo),
         message_count=self.message_count(),
         featured=featured_project(self.featured_data())
     )

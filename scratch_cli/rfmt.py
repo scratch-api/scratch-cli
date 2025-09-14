@@ -23,7 +23,10 @@ def print_fp(fp: str, /, **kwargs):
 def quote(content: str, /):
     return '> ' + '\n> '.join(content.splitlines())
 
-def escape(text: str):
+def escape(text: str, *, disabled: bool = False) -> str:
+    if disabled:
+        return text
+
     # from python-telegram-bot
     special_chars_regex = r'([_*[\]()~`>#+\-=|{}.!])'
     ret = re.sub(special_chars_regex, r'\\\1', text)

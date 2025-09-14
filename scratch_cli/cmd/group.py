@@ -22,10 +22,13 @@ def print_group_members():
         print(f"{i}. {session['username']}")
 
 def select_group_member() -> Optional[t.SESSION]:
+    _group = cookies.current_group
+    if len(_group['sessions']) == 1:
+        return _group['sessions'][0]
+
     print_group_members()
     selector = input("Select a group member: ")
 
-    _group = cookies.current_group
 
     for session in _group['sessions']:
         if session['username'] == selector:

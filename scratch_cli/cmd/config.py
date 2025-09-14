@@ -5,14 +5,16 @@ from typing import Optional
 from scratch_cli.decorator import sessionable, EXIT_SESSION_LOOP
 
 from scratch_cli.context import context
-from scratch_cli.scli_config import scli_config_with_project, scli_config, scli_validator, generate_scli_config, validate_scli_config_project_page, scli_config_project_id
+from scratch_cli.scli_config import scli_config_with_project, scli_config, scli_validator, generate_scli_config, \
+    validate_scli_config_project_page, scli_config_project_id
 from scratch_cli import rfmt, safmt
 from scratch_cli import appdata
 from scratch_cli import util
 
-from scratch_cli.cmd.group import print_group_members as print_group_members, select_group_member
+from scratch_cli.cmd.group import select_group_member
 
 from scratchattach.utils import exceptions as sa_exceptions
+
 
 @sessionable
 def print_configs():
@@ -27,6 +29,7 @@ SCLI_CONFIG{url}:
 ```json
 {json.dumps(data)}
 ```""")
+
 
 @sessionable
 def edit_config(username: str):
@@ -67,6 +70,7 @@ def edit_config(username: str):
     print(f"Sent to {project.url}")
 
     return EXIT_SESSION_LOOP
+
 
 def config(command: Optional[str]):
     match command:
