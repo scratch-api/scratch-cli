@@ -177,14 +177,17 @@ ACTIVITY_TABLE = {
 def activity_prettymsg(self: sa.Activity) -> str:
     raw = activity_raw(self)
 
+    for i, item in enumerate(raw):
+        raw[i] = rfmt.escape(item)
+
+    raw.append(f"_{color('grey50')}{self.datetime_created}{RESET}_")
+
     activity_formatter = ACTIVITY_TABLE.get(self.type, [None, ''])
     code = color(activity_formatter[0])
     icon = activity_formatter[1]
     if icon:
         icon = f"{code}{icon}{RESET} "
 
-    for i, item in enumerate(raw):
-        raw[i] = rfmt.escape(item)
 
     if len(raw) == 3:
         raw[1] = f"{code}{raw[1]}{RESET}"
