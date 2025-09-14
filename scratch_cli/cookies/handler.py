@@ -1,7 +1,12 @@
+"""
+Internal handler of cookies
+"""
+
 # store 'cookies' in appdata
 from __future__ import annotations
 
 import json
+import warnings
 
 from typing import Any
 
@@ -18,10 +23,12 @@ class _Cookies:
 
     @property
     def data(self) -> dict[str, str | int | None | bool | float | list | dict[str, Any]]:
+        warnings.warn("cookies.data")
         return json.load(appdata.COOKIES.open())
 
     @data.setter
     def data(self, data: dict[str, str | int | None | bool | float | list | dict[str, Any]]):
+        warnings.warn(f"cookies = {data}")
         json.dump(data, appdata.COOKIES.open("w"))
 
     def __setitem__(self, key: str, value: str | int | None | bool | float | list | dict[str, Any]):
