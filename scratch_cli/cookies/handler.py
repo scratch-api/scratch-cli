@@ -23,12 +23,10 @@ class _Cookies:
 
     @property
     def data(self) -> dict[str, str | int | None | bool | float | list | dict[str, Any]]:
-        warnings.warn("cookies.data")
         return json.load(appdata.COOKIES.open())
 
     @data.setter
     def data(self, data: dict[str, str | int | None | bool | float | list | dict[str, Any]]):
-        warnings.warn(f"cookies = {data}")
         json.dump(data, appdata.COOKIES.open("w"))
 
     def __setitem__(self, key: str, value: str | int | None | bool | float | list | dict[str, Any]):

@@ -1,16 +1,14 @@
 import argparse
-from typing import Optional
 
-from scratch_cli.typed_cookies import cookies
+from scratch_cli.cookies import cookies, t
 from scratch_cli.context import context
-from scratch_cli import typed_cookies as t
 from scratch_cli.util import ERROR_MSG
 
 import scratchattach as sa
 
 def print_all_groups():
     for _group in cookies.groups.values():
-        print('-', _group["name"])
+        print('-', _group.name)
 
 def print_group_members():
     if cookies.current_group_id == '':
@@ -19,10 +17,10 @@ def print_group_members():
         return
 
     _group = cookies.current_group
-    print(f"Reading members of {_group['name']!r}")
+    print(f"Reading members of {_group.name!r}")
 
-    for i, session in enumerate(_group['sessions']):
-        print(f"{i}. {session['username']}")
+    for i, session in enumerate(_group.sessions):
+        print(f"{i}. {session.username}")
 
 def select_group_member(error: bool=True):
     """
@@ -41,7 +39,6 @@ def select_group_member(error: bool=True):
 
     print_group_members()
     selector = input("Select a group member: ")
-
 
     for sess in _group['sessions']:
         if sess['username'] == selector:
@@ -71,21 +68,15 @@ def switch():
 def rename():
     assert cookies.current_group_id != '', "Not in a group"
 
-    group_name = input(f"Enter new group name for {cookies.current_group['name']!r}: ")
+    group_name = input(f"Enter new group name for {cookies.current_group.name!r}: ")
     group_id = group_name.lower()
 
     assert group_id not in cookies.groups, f"Existing name {group_name!r}"
     assert group_id != '', "Invalid name"
 
-    cookies.current_group |= {"name": group_name}
-
-    _group = cookies.current_group
-    new_groups = cookies.groups
-    del new_groups[cookies.current_group_id]
-    new_groups[group_id] = _group
-
-    cookies.groups = new_groups
+    cookies.current_group.name = group_name
     cookies.current_group_id = group_id
+    cookies.groups[group_id] = cookies.groups.pop(cookies.current_group_id)
 
 
 def group(parser: argparse.ArgumentParser, cmd):

@@ -2,11 +2,11 @@
 
 import scratchattach as sa
 
-import scratch_cli.typed_cookies as t
+from scratch_cli.cookies import cookies, t
 
 
-def session(_session: sa.Session) -> t.SESSION:
-    return {
-        "username": _session.username,
-        "id": _session.id,
-    }
+def session(_session: sa.Session) -> t.Session:
+    return t.Session(
+        username=_session.username,
+        id=_session.id
+    )

@@ -48,10 +48,14 @@ def find(*,
                 )
 
             case "faved" | "faves" | "favorited" | "favorites":
+                projects = user.favorites(limit=limit, offset=offset)
+                for project in projects:
+                    project.update()
+
                 rfmt.print_fp(
                     "faves.md",
                     username=user.name,
-                    projects=safmt.collate(safmt.project, user.favorites(limit=limit, offset=offset))
+                    projects=safmt.collate(safmt.project, projects)
                 )
 
             case "shared":

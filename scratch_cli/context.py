@@ -4,7 +4,7 @@ from typing import Optional
 
 import scratchattach as sa
 
-from scratch_cli.typed_cookies import cookies
+from scratch_cli.cookies import cookies, t
 
 @dataclass
 class _Context:
@@ -13,8 +13,8 @@ class _Context:
     @property
     def session(self) -> sa.Session:
         if self._session is None:
-            sess = cookies.current_group["sessions"][0]
-            self._session = sa.login_by_id(sess["id"], username=sess["username"])
+            sess = cookies.current_group.sessions[0]
+            self._session = sa.login_by_id(sess.id, username=sess.username)
 
         return self._session
 

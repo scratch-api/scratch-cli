@@ -15,14 +15,11 @@ def collate(func, for_objs: Iterable) -> str:
 
 
 def project(self: sa.Project):
-    if not hasattr(self, "author_name"):
-        self.update()
-
     return rfmt.md_fp(
         "project.md",
         title=self.title,
         id=self.id,
-        author=self.author_name,
+        author=self.author_name if hasattr(self, "author_name") else None,
     )
 
 
