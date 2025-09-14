@@ -1,8 +1,6 @@
 from scratch_cli.cookies import cookies, t
 from scratch_cli.context import context
 
-import scratchattach as sa
-
 class _ExitSessionLoop:
     pass
 
@@ -18,7 +16,7 @@ def sessionable(func):
     """
     def wrapper(*args, **kwargs):
         for sess in cookies.current_group.sessions:
-            context.session = sa.login_by_id(sess.id, username=sess.username)
+            context.session = sess.login
             if func(*args, **kwargs) is EXIT_SESSION_LOOP:
                 break
 

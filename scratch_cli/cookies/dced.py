@@ -5,7 +5,10 @@ from scratch_cli.cookies.handler import cookies as handler
 from abc import ABC, abstractmethod
 from typing import Self, Optional, Generic, TypeVar
 
+import scratchattach as sa
+
 cookies = None
+
 
 
 def try_save_cookies():
@@ -73,6 +76,9 @@ class CookieList(CookieAble, Generic[ITEM_T]):
             other = other._data
 
         return CookieList(self._data + other)
+
+    def __getitem__(self, item: int) -> ITEM_T:
+        return self._data[item]
 
     # mutable
 
@@ -168,6 +174,10 @@ class Session(CookieAble):
     username: str
     id: str
 
+    _: KW_ONLY
+
+    _web_handler: Optional[sa.Session] = None
+
     @classmethod
     def from_json(cls, data: dict) -> Self:
         return cls(
@@ -180,6 +190,12 @@ class Session(CookieAble):
             "username": self.username,
             "id": self.id,
         }
+
+    @property
+    def login(self) -> sa.Session:
+        if not self._web_handler:
+            self._web_handler = sa.login_by_id(self.id, username=self.username)
+        return self._web_handler
 
 
 @dataclass

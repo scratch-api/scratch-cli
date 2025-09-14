@@ -14,7 +14,7 @@ class _Context:
     def session(self) -> sa.Session:
         if self._session is None:
             sess = cookies.current_group.sessions[0]
-            self._session = sa.login_by_id(sess.id, username=sess.username)
+            self._session = sess.login
 
         return self._session
 
