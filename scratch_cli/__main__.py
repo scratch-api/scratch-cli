@@ -1,5 +1,4 @@
 import argparse
-from typing import Literal, Optional
 
 from scratch_cli import cmd
 from scratch_cli.__about__ import __version__
@@ -16,6 +15,13 @@ def main():
     )
 
     if commands := parser.add_subparsers(dest="command"):
+        if feed := commands.add_parser("feed", help="Get feed"):
+            feed.add_argument("mode", nargs="?")
+            feed.add_argument("-O", "--offset", default=0, type=int, dest="offset",
+                              help="Offset from which to start the search.")
+            feed.add_argument("-L", "--limit", default=10, type=int, dest="limit",
+                              help="Offset from which to start the search.")
+
         if login := commands.add_parser("login", help="Login to Scratch"):
             login.add_argument("--sessid", dest="login_by_sessid", action="store_true")
 
@@ -63,6 +69,8 @@ def main():
 
 def do_cmd(parser: argparse.ArgumentParser, args: _Args) -> None:
     match args.command:
+        case "feed":
+            cmd.feed(args.mode, args.offset, args.limit)
         case "login":
             cmd.login(args.login_by_sessid)
         case "group":

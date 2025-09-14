@@ -6,9 +6,17 @@ from scratch_cli import rfmt
 
 from rich.color import Color
 from scratch_cli.scli_config import scli_config
+from scratch_cli.util import ERROR_MSG
 
 RESET = "\x1b[0m"
 
+def color(content: Optional[str], /):
+    if content is None:
+        return ''
+
+    codes = Color.parse(content).get_ansi_codes()
+    color_code = f"\x1b[{';'.join(codes)}m"
+    return color_code
 
 def collate(func, for_objs: Iterable) -> str:
     return '\n'.join(func(obj) for obj in for_objs)
@@ -91,11 +99,9 @@ def user_profile(self: sa.User):
 
     if status := ocular_data.get("status"):
         color_str = ''
-        color = ocular_data.get("color")
-        if color is not None:
-            codes = Color.parse(color).get_ansi_codes()
-            color_code = f"\x1b[{';'.join(codes)}m"
-            color_str = f" {color_code}⬤{RESET}"
+        color_data = ocular_data.get("color")
+        if color_data is not None:
+            color_str = f" {color(color_data)}⬤{RESET}"
 
         ocular = f"*{status}*{color_str}"
 
@@ -126,3 +132,69 @@ def user_rank(self: sa.User):
         return "New scratcher"
     else:
         return "Scratcher"
+
+
+# noinspection PyUnresolvedReferences
+def activity_raw(self: sa.Activity) -> list[str]:
+    if isinstance(self.raw, str):
+        return [self.raw]
+
+    match self.type:
+        case "loveproject":
+            return [f"{self.actor_username}",  "loved", f"{self.title} ({self.project_id})"]
+        case "favoriteproject":
+            return [f"{self.actor_username}",  "favorited", f"{self.project_title} ({self.project_id})"]
+        case "becomecurator":
+            return [f"{self.actor_username}",  "now curating", f"{self.title} ({self.gallery_id})"]
+        case "followuser":
+            return [f"{self.actor_username}",  "followed", f"{self.followed_username}"]
+        case "followstudio":
+            return [f"{self.actor_username}",  "followed studio", f"{self.title} ({self.gallery_id})"]
+        case "shareproject":
+            return [f"{self.actor_username}",  "shared", f"{self.title} ({self.project_id})"]
+        case "remixproject":
+            return [f"{self.actor_username}",  "remixed", f"{self.parent_title} ({self.parent_id}) as {self.title} ({self.project_id})"]
+        case "becomeownerstudio":
+            return [f"{self.actor_username}",  "became owner", f"of {self.gallery_title} ({self.gallery_id})"]
+
+        case _:
+            raise NotImplementedError(f"Activity type {self.type!r} is not implemented!\n"
+                                      f"\n"
+                                      f"{ERROR_MSG}")
+
+# color, icon
+ACTIVITY_TABLE = {
+    "loveproject": ["red", "♥"],
+    "favoriteproject": ["yellow", "★"],
+    "becomecurator": ["green", "👥"],
+    "followuser": ["blue", "👥"],
+    "followstudio": ["blue", '👥'],
+    "shareproject": ["orange1", "❏"],
+    "remixproject": ["green", "꩜"],
+    "becomeownerstudio": ["red", "👤"],
+}
+
+def activity_prettymsg(self: sa.Activity) -> str:
+    raw = activity_raw(self)
+
+    activity_formatter = ACTIVITY_TABLE.get(self.type, [None, ''])
+    code = color(activity_formatter[0])
+    icon = activity_formatter[1]
+    if icon:
+        icon = f"{code}{icon}{RESET} "
+
+    for i, item in enumerate(raw):
+        raw[i] = rfmt.escape(item)
+
+    if len(raw) == 3:
+        raw[1] = f"{code}{raw[1]}{RESET}"
+
+    new = ' '.join(raw)
+
+    return f"{icon}{new}"
+
+def activity(self: sa.Activity):
+    return rfmt.md_fp(
+        "activity.md",
+        msg=activity_prettymsg(self)
+    )
