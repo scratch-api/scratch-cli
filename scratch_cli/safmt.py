@@ -126,7 +126,8 @@ def user_profile(self: sa.User):
         about_me=rfmt.quote(about_me_raw),
         wiwo=rfmt.quote(wiwo),
         message_count=self.message_count(),
-        featured=featured_project(self.featured_data())
+        featured=featured_project(self.featured_data()),
+        classroom=rfmt.escape("")  # scratchattach classroom api is not released yet
     )
 
 def user_rank(self: sa.User):

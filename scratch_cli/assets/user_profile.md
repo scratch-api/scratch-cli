@@ -4,7 +4,7 @@
 |--------------------------|--------------------|
 | {rank}                   | Joined {join_date} |
 | {country}                | {ocular}           |
-| {message_count} messages |                    |
+| {message_count} messages | {classroom}        |
 
 ## About me
 
