@@ -201,20 +201,24 @@ class Session(CookieAble):
 @dataclass
 class Group(CookieAble):
     name: str
-    sessions: CookieList[Session]
+    session_names: CookieList[str]
 
     @classmethod
     def from_json(cls, data: dict) -> Self:
         return cls(
             name=data.get('name'),
-            sessions=CookieList([Session.from_json(sess) for sess in data.get('sessions')]),
+            session_names=CookieList(data.get('sessions')),
         )
 
     def to_json(self):
         return {
             "name": self.name,
-            "sessions": [sess.to_json() for sess in self.sessions],
+            "sessions": list(self.session_names),
         }
+
+    @property
+    def sessions(self):
+        return [cookies.sessions.get(name) for name in self.session_names]
 
 
 @dataclass
@@ -224,8 +228,13 @@ class CookieJarConfig:
 
 @dataclass
 class CookieJar(CookieAble):
+    """
+    :cvar sessions: Mapping of lowercase usernames to sessions
+    """
+
     cache: Cache
     groups: CookieDict[str, Group]
+    sessions: CookieDict[str, Session]
 
     _: KW_ONLY
 
@@ -239,12 +248,14 @@ class CookieJar(CookieAble):
         return cls(
             Cache.from_json(data.get('cache', {})),
             CookieDict.from_json({k: Group.from_json(v) for k, v in data.get('groups', {}).items()}),
+            CookieDict.from_json({k: Session.from_json(v) for k, v in data.get('sessions', {}).items()}),
         )
 
     def to_json(self):
         return {
             'cache': self.cache.to_json(),
             'groups': {k: v.to_json() for k, v in self.groups.items()},
+            'sessions': {k: v.to_json() for k, v in self.sessions.items()},
         }
 
     @property
