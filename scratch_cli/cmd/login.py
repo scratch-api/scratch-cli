@@ -27,18 +27,19 @@ def login(login_by_sessid: bool):
 
 def register_session(sess: sa.Session):
     serialized = serialize.session(sess)
+    session_name = sess.username.lower()
+
+    cookies.sessions[session_name] = serialized
 
     if cookies.current_group_id == '':
-        group_name = sess.username.lower()
-
         i = 2
-        old_name = group_name
-        while group_name in cookies.groups:
-            group_name = f"{old_name}_{i}"
+        old_name = session_name
+        while session_name in cookies.groups:
+            session_name = f"{old_name}_{i}"
 
-        new_group: t.Group = t.Group(name= group_name, sessions=[serialized])
+        new_group: t.Group = t.Group(name=session_name, session_names=t.CookieList([session_name]))
 
-        cookies.groups |= {group_name: new_group}
-        cookies.current_group_id = group_name
+        cookies.groups[session_name] = new_group
+        cookies.current_group_id = session_name
     else:
         cookies.current_group.sessions += [serialized]

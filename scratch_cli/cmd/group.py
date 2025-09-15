@@ -30,11 +30,10 @@ def select_group_member(error: bool=True):
     :return:
     """
     _group = cookies.current_group
-    if len(_group['sessions']) == 1:
-        sess = _group['sessions'][0]
-        context.session = sa.login_by_id(sess["id"], username=sess["username"])
+    if len(_group.session_names) == 1:
+        context.session = _group.sessions[0].login
         return
-    elif len(_group['sessions']) == 0:
+    elif len(_group.session_names) == 0:
         if error:
             raise Exception("No sessions")
         return
@@ -42,16 +41,15 @@ def select_group_member(error: bool=True):
     print_group_members()
     selector = input("Select a group member: ")
 
-    for sess in _group['sessions']:
-        if sess['username'] == selector:
-            context.session = sa.login_by_id(sess["id"], username=sess["username"])
+    for sess in _group.sessions:
+        if sess.username.lower() == selector.lower():
+            context.session = sess.login
             return
 
     if selector.isnumeric():
         selector = int(selector)
-        if selector < len(_group['sessions']):
-            sess = _group['sessions'][selector]
-            context.session = sa.login_by_id(sess["id"], username=sess["username"])
+        if selector < len(_group.session_names):
+            context.session = _group.sessions[selector].login
             return
 
     if error:
@@ -79,8 +77,9 @@ def rename():
     assert group_id != '', "Invalid name"
 
     cookies.current_group.name = group_name
-    cookies.current_group_id = group_id
+
     cookies.groups[group_id] = cookies.groups.pop(cookies.current_group_id)
+    cookies.current_group_id = group_id
 
 
 def group(parser: argparse.ArgumentParser, args: _Args):

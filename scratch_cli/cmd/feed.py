@@ -13,7 +13,7 @@ def whats_happening(offset, limit):
 
     rfmt.print_fp(
         "feed.md",
-        username=user.name,
+        username=rfmt.escape(user.name),
         activities=safmt.collate(safmt.activity, sess.feed(offset=offset, limit=limit))
     )
 

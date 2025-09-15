@@ -103,12 +103,12 @@ def user_profile(self: sa.User):
         if color_data is not None:
             color_str = f" {color(color_data)}⬤{RESET}"
 
-        ocular = f"*{status}*{color_str}"
+        ocular = f"*{rfmt.escape(status)}*{color_str}"
 
     return rfmt.md_fp(
         "user_profile.md",
 
-        username=self.name,
+        username=rfmt.escape(self.name),
         id=self.id,
         rank=user_rank(self),
         country=self.country,

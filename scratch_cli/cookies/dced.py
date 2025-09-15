@@ -80,6 +80,9 @@ class CookieList(CookieAble, Generic[ITEM_T]):
     def __getitem__(self, item: int) -> ITEM_T:
         return self._data[item]
 
+    def __len__(self):
+        return len(self._data)
+
     # mutable
 
     @try_save_cookies_on_ret
@@ -89,6 +92,10 @@ class CookieList(CookieAble, Generic[ITEM_T]):
     @try_save_cookies_on_ret
     def __delitem__(self, key):
         del self._data[key]
+
+    @try_save_cookies_on_ret
+    def append(self, __object: ITEM_T):
+        self._data.append(__object)
 
 @dataclass
 class CookieDict(CookieAble, Generic[KEY_T, VAL_T]):
@@ -220,6 +227,9 @@ class Group(CookieAble):
     def sessions(self):
         return [cookies.sessions.get(name) for name in self.session_names]
 
+    @sessions.setter
+    def sessions(self, value: list[Session]):
+        self.session_names = CookieList([sess.username.lower() for sess in value])
 
 @dataclass
 class CookieJarConfig:
