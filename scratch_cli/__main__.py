@@ -3,7 +3,6 @@ import argparse
 from scratch_cli import cmd
 from scratch_cli.__about__ import __version__
 
-
 from scratch_cli._args import Args as _Args
 
 
@@ -21,6 +20,16 @@ def main():
                               help="Offset from which to start the search.")
             feed.add_argument("-L", "--limit", default=10, type=int, dest="limit",
                               help="Offset from which to start the search.")
+
+        if msgs := commands.add_parser("msgs", help="Get messages"):
+            msgs.add_argument("-O", "--offset", default=0, type=int, dest="offset",
+                              help="Offset from which to start the search.")
+            msgs.add_argument("-L", "--limit", default=None, type=int, dest="limit",
+                              help="Offset from which to start the search.")
+            msgs.add_argument("-F", "--filter", dest="filter",
+                              help="Offset from which to start the search.")
+            msgs.add_argument("-D", "--date", dest="date",
+                              help="Date limit for search.")
 
         if login := commands.add_parser("login", help="Login to Scratch"):
             login.add_argument("--sessid", dest="login_by_sessid", action="store_true")
@@ -81,6 +90,13 @@ def do_cmd(parser: argparse.ArgumentParser, args: _Args) -> None:
             cmd.ungroup()
         case "profile":
             cmd.profile()
+        case "msgs":
+            cmd.messages(
+                offset=args.offset,
+                limit=args.limit,
+                filter_by=args.filter,
+                date=args.date
+            )
         case "find":
             cmd.find(
                 offset=args.offset,

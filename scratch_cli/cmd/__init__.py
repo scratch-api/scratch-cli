@@ -6,3 +6,4 @@ from scratch_cli.cmd.profile import profile
 from scratch_cli.cmd.find import find
 from scratch_cli.cmd.config import config
 from scratch_cli.cmd.feed import feed
+from scratch_cli.cmd.messages import messages

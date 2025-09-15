@@ -2,7 +2,7 @@ import argparse
 from typing import Literal, Optional
 
 class Args(argparse.Namespace):
-    command: Literal['login', 'group', 'groups', 'ungroup', 'profile', 'find', 'config', None]
+    command: Literal['login', 'group', 'groups', 'ungroup', 'profile', 'find', 'config', 'msgs', None]
 
     username: Optional[str]
     project_id: Optional[int]
@@ -10,6 +10,10 @@ class Args(argparse.Namespace):
     mode: Optional[str]
     offset: int
     limit: int
+
+    # messages
+    date: Optional[str]
+    filter: Optional[str]
 
     # login
     login_by_sessid: bool

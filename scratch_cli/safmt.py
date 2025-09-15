@@ -1,6 +1,8 @@
 # format sa objects
 from typing import Optional, Iterable
 
+from html import unescape
+
 import scratchattach as sa
 from scratch_cli import rfmt
 
@@ -17,6 +19,13 @@ def color(content: Optional[str], /):
     codes = Color.parse(content).get_ansi_codes()
     color_code = f"\x1b[{';'.join(codes)}m"
     return color_code
+
+def color_all(content: str, color_str: Optional[str], /):
+    """
+    Prepend the color to every word to force colored printing. More chars means less space in the terminal, so be careful
+    """
+    _col = color(color_str)
+    return _col + (' ' + _col).join(content.split()) + RESET
 
 def collate(func, for_objs: Iterable) -> str:
     return '\n'.join(func(obj) for obj in for_objs)
@@ -67,7 +76,7 @@ def project_page(self: sa.Project):
     return rfmt.md_fp(
         "project_page.md",
         title=rfmt.escape(self.title),
-        author=self.author_name if hasattr(self, "author_name") else None,
+        author=rfmt.escape(self.author_name) if hasattr(self, "author_name") else None,
         id=self.id,
         instructions=rfmt.quote(_handle_configurable_markdownable(rfmt.escape(self.instructions), "", False)),
         notes=rfmt.quote(_handle_configurable_markdownable(rfmt.escape(self.notes), "", False)),
@@ -141,21 +150,54 @@ def activity_raw(self: sa.Activity) -> list[str]:
 
     match self.type:
         case "loveproject":
-            return [f"{self.actor_username}",  "loved", f"{self.title} ({self.project_id})"]
+            return [f"{self.actor_username}",  "loved", f"-P {self.title!r} ({self.project_id})"]
         case "favoriteproject":
-            return [f"{self.actor_username}",  "favorited", f"{self.project_title} ({self.project_id})"]
+            return [f"{self.actor_username}",  "favorited", f"-P {self.project_title!r} ({self.project_id})"]
         case "becomecurator":
-            return [f"{self.actor_username}",  "now curating", f"{self.title} ({self.gallery_id})"]
+            return [f"{self.actor_username}",  "now curating", f"-S {self.title!r} ({self.gallery_id})"]
         case "followuser":
-            return [f"{self.actor_username}",  "followed", f"{self.followed_username}"]
+            return [f"{self.actor_username}",  "followed", f"-U {self.followed_username}"]
         case "followstudio":
-            return [f"{self.actor_username}",  "followed studio", f"{self.title} ({self.gallery_id})"]
+            return [f"{self.actor_username}",  "followed", f"-S {self.title!r} ({self.gallery_id})"]
         case "shareproject":
-            return [f"{self.actor_username}",  "shared", f"{self.title} ({self.project_id})"]
+            return [f"{self.actor_username}",  "shared", f"-P {self.title!r} ({self.project_id})"]
         case "remixproject":
-            return [f"{self.actor_username}",  "remixed", f"{self.parent_title} ({self.parent_id}) as {self.title} ({self.project_id})"]
+            return [f"{self.actor_username}",  "remixed", f"-P {self.parent_title!r} ({self.parent_id}) as -P {self.title!r} ({self.project_id})"]
         case "becomeownerstudio":
-            return [f"{self.actor_username}",  "became owner", f"of {self.gallery_title} ({self.gallery_id})"]
+            return [f"{self.actor_username}",  "became owner of", f"-S {self.gallery_title!r} ({self.gallery_id})"]
+
+        case "addcomment":
+            ret = [self.actor_username, "commented on"]
+
+            match self.comment_type:
+                case 0:
+                    # project
+                    ret.append(f"-P {self.comment_obj_title!r} ({self.comment_obj_id}")
+                case 1:
+                    # user
+                    ret.append(f"-U {self.comment_obj_title}")
+
+                case 2:
+                    # studio
+                    ret.append(f"-S {self.comment_obj_title!r} ({self.comment_obj_id}")
+
+                case _:
+                    raise ValueError(f"Unknown comment type: {self.comment_type}")
+
+            ret[-1] += f"#{self.comment_id})"
+
+            ret.append(f"{unescape(self.comment_fragment)}")
+
+            return ret
+
+        case "curatorinvite":
+            return [f"{self.actor_username}", "invited you to curate", f"-S {self.title!r} ({self.gallery_id})"]
+
+        case "userjoin":
+            return [f"{self.actor_username}", "joined Scratch"]
+
+        case "studioactivity":
+            return ['Studio activity', '', f"-S {self.title!r} ({self.gallery_id})"]
 
         case _:
             raise NotImplementedError(f"Activity type {self.type!r} is not implemented!\n"
@@ -172,6 +214,10 @@ ACTIVITY_TABLE = {
     "shareproject": ["orange1", "❏"],
     "remixproject": ["green", "꩜"],
     "becomeownerstudio": ["red", "👤"],
+    "addcomment": ["blue", "💬"],
+    "studioactivity": ["green", "❏"],
+    "curatorinvite": ["green", "👥"],
+    "userjoin": ["green", "👤"]
 }
 
 def activity_prettymsg(self: sa.Activity) -> str:
@@ -189,10 +235,13 @@ def activity_prettymsg(self: sa.Activity) -> str:
         icon = f"{code}{icon}{RESET} "
 
 
-    if len(raw) == 3:
+    if len(raw) > 1 and raw[1]:
         raw[1] = f"{code}{raw[1]}{RESET}"
 
-    new = ' '.join(raw)
+    if self.type == "addcomment":
+        raw[3] = f"\n{rfmt.quote(raw[3])}\n"
+
+    new = ' '.join(filter(lambda x: x, raw))
 
     return f"{icon}{new}"
 
